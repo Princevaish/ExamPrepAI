@@ -1,0 +1,844 @@
+{% extends "base.html" %}
+{% block title %}AI Quiz Generator{% endblock %}
+
+{% block body %}
+
+<style>
+  .mcq-hero {
+    height: 75vh;
+    background: linear-gradient(135deg, rgba(15, 32, 39, 0.85), rgba(32, 58, 67, 0.85)), 
+                url("https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat fixed;
+    position: relative;
+    padding: 40px 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .mcq-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(0, 255, 255, 0.2), transparent 60%),
+                radial-gradient(circle at 70% 50%, rgba(0, 179, 255, 0.2), transparent 60%);
+    animation: heroGlow 8s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes heroGlow {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+  }
+
+  .mcq-hero .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+  }
+
+  .glass-box {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.37),
+      0 0 60px rgba(0, 255, 255, 0.3),
+      inset 0 0 40px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s ease;
+    animation: fadeIn 1.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 80px rgba(0, 255, 255, 0.5);
+  }
+
+  .glass-btn {
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    border: none;
+    backdrop-filter: blur(6px);
+    padding: 12px 32px;
+    border-radius: 50px;
+    color: #000 !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .glass-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.9);
+    color: #000 !important;
+  }
+
+  .animate-fade {
+    animation: fadeIn 1.2s ease-in-out;
+  }
+
+  @media (max-width: 768px) {
+    .mcq-hero {
+      height: 60vh;
+    }
+  }
+
+  .glass-card-neo {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(20px);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.37),
+      0 0 60px rgba(0, 255, 255, 0.2),
+      inset 0 0 40px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s ease;
+    animation: slideUp 0.8s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass-card-neo:hover {
+    transform: translateY(-6px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 80px rgba(0, 255, 255, 0.4);
+    border-color: rgba(0, 255, 255, 0.4);
+  }
+
+  .icon-circle {
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 179, 255, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(12px);
+    font-size: 1.8rem;
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+    animation: iconFloat 3s ease-in-out infinite;
+  }
+
+  @keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .glass-input,
+  textarea.glass-input,
+  select.glass-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
+  }
+
+  .glass-input:focus,
+  textarea.glass-input:focus,
+  select.glass-input:focus {
+    background: rgba(15, 32, 39, 0.98);
+    border-color: #00ffff;
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.6),
+      inset 0 0 15px rgba(0, 255, 255, 0.3);
+    color: #fff;
+    outline: none;
+  }
+
+  .glass-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .form-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  }
+
+  .big-btn {
+    padding: 16px 24px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.4s ease;
+  }
+
+  .shadow-neon-blue {
+    box-shadow: 0 0 25px rgba(0, 153, 255, 0.6);
+  }
+
+  .pulse-hover:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 40px rgba(0, 153, 255, 0.8);
+    animation: pulse 0.6s ease-in-out;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translateY(-3px) scale(1.02); }
+    50% { transform: translateY(-3px) scale(1.05); }
+  }
+
+  .option-btn {
+    padding: 18px 24px;
+    border-radius: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    color: rgba(255, 255, 255, 0.9);
+    text-align: left;
+    transition: all 0.4s ease;
+    margin-bottom: 12px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.2),
+      inset 0 0 15px rgba(255, 255, 255, 0.03);
+  }
+
+  .option-btn:hover {
+    transform: translateX(8px) scale(1.01);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(0, 200, 255, 0.5);
+    box-shadow: 
+      0 6px 20px rgba(0, 0, 0, 0.3),
+      0 0 25px rgba(0, 200, 255, 0.4);
+  }
+
+  .option-btn.selected {
+    background: linear-gradient(135deg, rgba(0, 200, 255, 0.25), rgba(0, 179, 255, 0.25));
+    border-color: rgba(0, 200, 255, 0.8);
+    font-weight: 600;
+    color: #fff;
+    box-shadow: 
+      0 6px 25px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(0, 200, 255, 0.6),
+      inset 0 0 20px rgba(0, 255, 255, 0.15);
+  }
+
+  .option-btn.correct {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.3), rgba(0, 255, 136, 0.3));
+    border-color: rgba(40, 167, 69, 0.9);
+    color: #fff;
+    box-shadow: 
+      0 6px 25px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(0, 255, 136, 0.6);
+  }
+
+  .option-btn.incorrect {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.3), rgba(255, 0, 85, 0.3));
+    border-color: rgba(220, 53, 69, 0.9);
+    color: #fff;
+    box-shadow: 
+      0 6px 25px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(220, 53, 69, 0.6);
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out forwards;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    padding: 10px 24px;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #00b3ff, #0088ff);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(0, 179, 255, 0.7);
+  }
+
+  .btn-outline-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    padding: 10px 24px;
+  }
+
+  .btn-outline-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-outline-secondary:disabled {
+    opacity: 0.4;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #00ff88);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(135deg, #00ff88, #20c997);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.7);
+  }
+
+  .badge {
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .badge.bg-primary {
+    background: linear-gradient(135deg, #007bff, #00b3ff) !important;
+    color: #000;
+  }
+
+  .badge.bg-info {
+    background: linear-gradient(135deg, #17a2b8, #00e5ff) !important;
+    color: #000;
+  }
+
+  .badge.bg-success {
+    background: linear-gradient(135deg, #28a745, #00ff88) !important;
+    color: #000;
+  }
+
+  .alert {
+    border-radius: 16px;
+    backdrop-filter: blur(15px);
+    border: 1px solid;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .alert-success {
+    background: rgba(40, 167, 69, 0.2);
+    border-color: rgba(40, 167, 69, 0.5);
+    color: #00ff88;
+  }
+
+  .alert-danger {
+    background: rgba(220, 53, 69, 0.2);
+    border-color: rgba(220, 53, 69, 0.5);
+    color: #ff6b6b;
+  }
+
+  .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  h3, h4, h5, h6 {
+    color: #fff;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    border: 1px solid;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .card.border-success {
+    border-color: rgba(40, 167, 69, 0.6);
+  }
+
+  .card.border-danger {
+    border-color: rgba(220, 53, 69, 0.6);
+  }
+
+  .card-body h6 {
+    color: #fff;
+  }
+
+  .card-body p {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .text-success {
+    color: #00ff88 !important;
+  }
+
+  .text-danger {
+    color: #ff6b6b !important;
+  }
+
+  #qText {
+    color: #fff;
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .big-btn {
+      font-size: 1rem;
+      padding: 14px 20px;
+    }
+
+    .glass-box {
+      padding: 2rem 1.5rem;
+    }
+
+    .option-btn {
+      padding: 15px 18px;
+      font-size: 0.95rem;
+    }
+  }
+</style>
+
+<!-- ========== HERO SECTION ========== -->
+<section class="mcq-hero d-flex align-items-center text-white">
+  <div class="overlay"></div>
+
+  <div class="container position-relative">
+    <div class="col-md-8 col-lg-6 glass-box p-4 p-md-5 animate-fade">
+      <h1 class="fw-bold display-4 mb-3">AI Quiz Mode</h1>
+      <p class="lead mb-4">
+        Generate adaptive quizzes on any topic — test yourself and get instant feedback with detailed explanations.
+      </p>
+
+      <a href="#quizRequest" class="glass-btn btn-lg">
+        Create Quiz
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MAIN CONTENT ================= -->
+<div class="container my-5">
+
+  <!-- ERROR MESSAGE -->
+  {% if error %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>⚠ Error:</strong> {{ error }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endif %}
+
+  <!-- QUIZ REQUEST FORM -->
+  <div id="quizRequest" class="glass-card-neo p-4 p-md-5 shadow-xxl animate-slide-up mb-4">
+    <div class="d-flex align-items-center mb-4">
+      <div class="icon-circle me-3"><i class="bi bi-lightning-charge text-primary"></i></div>
+      <h3 class="fw-bold mb-0">Create an AI Quiz</h3>
+    </div>
+
+    <form id="generateQuizForm">
+      {% csrf_token %}
+      
+      <label class="form-label fw-bold">Topic / Chapter</label>
+      <textarea class="form-control form-control-lg glass-input subtle-border mb-3" 
+                rows="2" name="topic" id="quizTopic"
+                placeholder="Enter the topic or paste notes..." 
+                required>{{ topic|default:"" }}</textarea>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Number of Questions</label>
+          <input type="number" name="count" id="quizCount"
+                 class="form-control form-control-lg glass-input subtle-border" 
+                 placeholder="e.g., 10" min="1" max="100" 
+                 value="{{ count|default:'10' }}" required/>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Difficulty</label>
+          <select name="difficulty" id="quizDifficulty" class="form-select form-select-lg glass-input subtle-border">
+            <option value="easy" {% if difficulty == 'easy' %}selected{% endif %}>Easy</option>
+            <option value="medium" {% if difficulty == 'medium' or not difficulty %}selected{% endif %}>Medium</option>
+            <option value="hard" {% if difficulty == 'hard' %}selected{% endif %}>Hard</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg w-100 big-btn pulse-hover shadow-neon-blue" type="submit">
+        ⚡ Generate Quiz
+      </button>
+    </form>
+
+    <div id="loadingIndicator" class="d-none mt-4 text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 fw-bold">Generating your quiz... Please wait.</p>
+    </div>
+  </div>
+
+  <!-- QUIZ INTERFACE (renders if questions provided) -->
+  <div id="quizArea" class="d-none">
+    <!-- Progress bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="badge bg-primary p-2 px-3">Quiz Mode</div>
+        <div id="quizTopicDisplay" class="text-muted fw-bold"></div>
+      </div>
+
+      <div class="text-muted">Progress: <span id="qProgress" class="fw-bold">0/0</span></div>
+    </div>
+
+    <!-- QUESTION CARD -->
+    <div id="questionCard" class="glass-card-neo p-4 p-md-5 mb-4">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <h5 class="fw-bold mb-0" id="qNumber">Question 1</h5>
+        <div class="badge bg-info" id="qDifficulty">Medium</div>
+      </div>
+
+      <div id="qText" class="mb-4 fs-5"></div>
+
+      <div id="optionsList" class="mb-4"></div>
+
+      <div id="feedbackBox" class="d-none alert mb-4"></div>
+
+      <div class="d-flex justify-content-between">
+        <button id="prevBtn" class="btn btn-outline-secondary" disabled>‹ Previous</button>
+        <button id="submitAnswerBtn" class="btn btn-primary">Submit Answer</button>
+        <button id="nextBtn" class="btn btn-primary" disabled>Next ›</button>
+      </div>
+    </div>
+
+    <!-- RESULT PANEL -->
+    <div id="resultPanel" class="d-none glass-card-neo p-4 p-md-5">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Quiz Completed!</h4>
+        <div class="d-flex gap-2 align-items-center">
+          <div class="fs-5 fw-bold">Your Score:</div>
+          <div class="badge bg-success p-3 px-4 fs-4" id="finalScore">0%</div>
+        </div>
+      </div>
+
+      <div id="resultDetails" class="mb-4"></div>
+
+      <div class="d-flex gap-3">
+        <a href="/ai/quiz/" class="btn btn-primary btn-lg">Take Another Quiz</a>
+        09:34    <a href="/" class="btn btn-outline-secondary btn-lg">Back to Home</a>
+  </div>
+</div>
+  </div>
+</div>
+
+
+<!-- ================= SCRIPT: Quiz Logic ================= -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('generateQuizForm');
+  const loadingIndicator = document.getElementById('loadingIndicator');
+  const quizRequest = document.getElementById('quizRequest');
+  const quizArea = document.getElementById('quizArea');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const topic = document.getElementById('quizTopic').value.trim();
+    const count = parseInt(document.getElementById('quizCount').value);
+    const difficulty = document.getElementById('quizDifficulty').value;
+
+    if (!topic || !count) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    if (count <= 0 || count > 100) {
+      alert('Please enter a number between 1 and 100');
+      return;
+    }
+
+    loadingIndicator.classList.remove('d-none');
+    form.querySelector('button[type="submit"]').disabled = true;
+
+    try {
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      const response = await fetch('/ai/quiz/async/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ topic, count, difficulty })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to start quiz generation');
+      }
+
+      console.log('Task started:', data.task_id);
+
+      pollTaskStatus(data.task_id, topic, difficulty);
+
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error: ' + error.message);
+      loadingIndicator.classList.add('d-none');
+      form.querySelector('button[type="submit"]').disabled = false;
+    }
+  });
+
+  function pollTaskStatus(taskId, topic, difficulty) {
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`/ai/task-status/${taskId}/`);
+        const data = await response.json();
+
+        console.log('Task status:', data);
+
+        if (data.ready) {
+          clearInterval(pollInterval);
+          loadingIndicator.classList.add('d-none');
+          form.querySelector('button[type="submit"]').disabled = false;
+
+          if (data.successful && data.result) {
+            const questions = Array.isArray(data.result) ? data.result : [];
+            
+            console.log('Received questions:', questions);
+            
+            if (questions.length > 0) {
+              // Debug first question structure
+              console.log('First question structure:', questions[0]);
+              console.log('First question improvement field:', questions[0].improvement);
+              
+              startQuiz(questions, topic, difficulty);
+            } else {
+              alert('No quiz questions were generated. Please try again.');
+            }
+          } else {
+            alert('Error generating quiz: ' + (data.error || 'Unknown error'));
+          }
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+        clearInterval(pollInterval);
+        loadingIndicator.classList.add('d-none');
+        form.querySelector('button[type="submit"]').disabled = false;
+        alert('Error checking task status: ' + error.message);
+      }
+    }, 2000);
+  }
+
+  function startQuiz(questions, topic, difficulty) {
+    let currentIndex = 0;
+    let userAnswers = Array(questions.length).fill(null);
+    let showingFeedback = false;
+
+    const questionCard = document.getElementById('questionCard');
+    const quizTopicDisplay = document.getElementById('quizTopicDisplay');
+    const qProgress = document.getElementById('qProgress');
+    const qNumber = document.getElementById('qNumber');
+    const qText = document.getElementById('qText');
+    const qDifficulty = document.getElementById('qDifficulty');
+    const optionsList = document.getElementById('optionsList');
+    const feedbackBox = document.getElementById('feedbackBox');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitAnswerBtn = document.getElementById('submitAnswerBtn');
+    const resultPanel = document.getElementById('resultPanel');
+    const resultDetails = document.getElementById('resultDetails');
+    const finalScore = document.getElementById('finalScore');
+
+    quizTopicDisplay.textContent = topic || 'Quiz';
+    qDifficulty.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+
+    quizArea.classList.remove('d-none');
+    
+    setTimeout(() => {
+      quizArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+
+    function renderQuestion(index) {
+      const q = questions[index];
+      currentIndex = index;
+      showingFeedback = false;
+
+      console.log('Rendering question:', index, q);
+
+      qNumber.textContent = `Question ${index + 1}`;
+      qText.textContent = q.question || '';
+      qProgress.textContent = `${index + 1}/${questions.length}`;
+
+      optionsList.innerHTML = '';
+      Object.keys(q.options).forEach(key => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option-btn';
+        btn.innerHTML = `<strong>${key}.</strong> ${q.options[key]}`;
+        btn.dataset.option = key;
+
+        if (userAnswers[index] === key) {
+          btn.classList.add('selected');
+        }
+
+        btn.addEventListener('click', () => {
+          if (!showingFeedback) {
+            userAnswers[index] = key;
+            Array.from(optionsList.children).forEach(child => {
+              child.classList.remove('selected');
+            });
+            btn.classList.add('selected');
+          }
+        });
+
+        optionsList.appendChild(btn);
+      });
+
+      feedbackBox.classList.add('d-none');
+
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = true;
+      submitAnswerBtn.disabled = false;
+      submitAnswerBtn.classList.remove('d-none');
+    }
+
+    function showFeedback() {
+      const q = questions[currentIndex];
+      const userAnswer = userAnswers[currentIndex];
+      const correctAnswer = q.answer;
+
+      console.log('Showing feedback for question:', q);
+      console.log('Question improvement field:', q.improvement);
+      console.log('User answer:', userAnswer, 'Correct:', correctAnswer);
+
+      if (!userAnswer) {
+        alert('Please select an answer first!');
+        return;
+      }
+
+      showingFeedback = true;
+      submitAnswerBtn.classList.add('d-none');
+      nextBtn.disabled = false;
+
+      Array.from(optionsList.children).forEach(btn => {
+        const option = btn.dataset.option;
+        btn.style.pointerEvents = 'none';
+
+        if (option === correctAnswer) {
+          btn.classList.add('correct');
+        }
+        if (option === userAnswer && option !== correctAnswer) {
+          btn.classList.add('incorrect');
+        }
+      });
+
+      const isCorrect = userAnswer === correctAnswer;
+      
+      // Build feedback HTML - only show "Area of Improvement" if answer is WRONG
+      let feedbackHTML = `
+        <h6 class="fw-bold">${isCorrect ? '✓ Correct!' : '✗ Incorrect'}</h6>
+        <p class="mb-2"><strong>Explanation:</strong> ${q.explanation || 'No explanation available'}</p>
+      `;
+      
+      // Only add "Area of Improvement" if the answer is incorrect
+      if (!isCorrect) {
+        const improvementText = q.improvement || 'Review the topic thoroughly.';
+        console.log('Adding improvement text:', improvementText);
+        feedbackHTML += `<p class="mb-0"><strong>Area of Improvement:</strong> ${improvementText}</p>`;
+      }
+      
+      feedbackBox.className = `alert ${isCorrect ? 'alert-success' : 'alert-danger'}`;
+      feedbackBox.innerHTML = feedbackHTML;
+      feedbackBox.classList.remove('d-none');
+      
+      console.log('Feedback HTML:', feedbackHTML);
+    }
+
+    function nextQuestion() {
+      if (currentIndex < questions.length - 1) {
+        renderQuestion(currentIndex + 1);
+      } else {
+        showResults();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        renderQuestion(currentIndex - 1);
+      }
+    }
+
+    function showResults() {
+      let correct = 0;
+      const details = questions.map((q, i) => {
+        const userAns = userAnswers[i];
+        const isCorrect = userAns === q.answer;
+        if (isCorrect) correct++;
+
+        return {
+          question: q.question,
+          userAnswer: userAns ? q.options[userAns] : 'No answer',
+          correctAnswer: q.options[q.answer],
+          isCorrect,
+          explanation: q.explanation
+        };
+      });
+
+      const percent = Math.round((correct / questions.length) * 100);
+      finalScore.textContent = `${percent}%`;
+
+      resultDetails.innerHTML = details.map((d, i) => `
+        <div class="card mb-3 ${d.isCorrect ? 'border-success' : 'border-danger'}">
+          <div class="card-body">
+            <h6 class="fw-bold">Q${i + 1}: ${d.question}</h6>
+            <p class="mb-1"><strong>Your Answer:</strong> <span class="${d.isCorrect ? 'text-success' : 'text-danger'}">${d.userAnswer}</span></p>
+            <p class="mb-1"><strong>Correct Answer:</strong> <span class="text-success">${d.correctAnswer}</span></p>
+            <p class="mb-0 small text-muted">${d.explanation}</p>
+          </div>
+        </div>
+      `).join('');
+
+      questionCard.classList.add('d-none');
+      resultPanel.classList.remove('d-none');
+      resultPanel.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    prevBtn.addEventListener('click', prevQuestion);
+    nextBtn.addEventListener('click', nextQuestion);
+    submitAnswerBtn.addEventListener('click', showFeedback);
+
+    renderQuestion(0);
+  }
+});
+</script>
+
+
+{% endblock %}

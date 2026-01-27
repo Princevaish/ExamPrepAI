@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+{% block title %}Contact{% endblock title %}
+
+{% block body %}
+
+<style>
+  .contact-hero {
+    height: 70vh;
+    background: linear-gradient(135deg, rgba(15, 32, 39, 0.65), rgba(32, 58, 67, 0.65)), 
+                url("https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=1600&q=80") center/cover fixed;
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .contact-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(0, 255, 255, 0.2), transparent 60%),
+                radial-gradient(circle at 70% 50%, rgba(0, 179, 255, 0.2), transparent 60%);
+    animation: heroGlow 8s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes heroGlow {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    animation: fadeIn 1.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #ffffff, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.37),
+      0 0 60px rgba(0, 255, 255, 0.2),
+      inset 0 0 40px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s ease;
+    animation: slideUp 0.8s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 80px rgba(0, 255, 255, 0.4);
+    border-color: rgba(0, 255, 255, 0.4);
+  }
+
+  .info-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 2rem;
+    transition: all 0.4s ease;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.03);
+  }
+
+  .info-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 
+      0 8px 30px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(0, 200, 255, 0.5);
+    border-color: rgba(0, 200, 255, 0.4);
+  }
+
+  .icon-wrapper {
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 179, 255, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .info-card:hover .icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 
+      0 6px 25px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(0, 255, 255, 0.6);
+  }
+
+  .form-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  }
+
+  .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
+  }
+
+  .form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #00ffff;
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.6),
+      inset 0 0 15px rgba(0, 255, 255, 0.3);
+    color: #fff;
+    outline: none;
+  }
+
+  .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 150px;
+  }
+
+  .btn-neon {
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    padding: 0.9rem 3rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .btn-neon:hover {
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.9);
+    transform: translateY(-3px) scale(1.05);
+    color: #000;
+  }
+
+  .accordion-item {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .accordion-button {
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 1.2rem 1.5rem;
+    font-weight: 600;
+    box-shadow: none;
+  }
+
+  .accordion-button:not(.collapsed) {
+    background: rgba(0, 200, 255, 0.1);
+    color: #00ffff;
+    box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1);
+  }
+
+  .accordion-button:focus {
+    box-shadow: none;
+    border: none;
+  }
+
+  .accordion-button::after {
+    filter: brightness(0) invert(1);
+  }
+
+  .accordion-body {
+    background: rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 1.2rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.2), rgba(0, 179, 255, 0.2));
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 0 60px rgba(0, 255, 255, 0.3);
+  }
+
+  h2, h3, h4, h5 {
+    color: #fff;
+  }
+
+  .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  @media (max-width: 768px) {
+    .contact-hero {
+      height: 60vh;
+      background-attachment: scroll;
+    }
+
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .btn-neon {
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<!-- ========== HERO SECTION ========== -->
+<section class="contact-hero text-white">
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="section-title mb-3">Let's Connect</h1>
+      <p class="section-subtitle mb-4">
+        We would love to hear from you. Reach out anytime — we're here to help!
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CONTACT DETAILS + FORM ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- LEFT: CONTACT INFO -->
+      <div class="col-md-4">
+        <div class="info-card mb-4">
+          <div class="icon-wrapper">
+            📩
+          </div>
+          <h5 class="fw-bold mb-2">Email</h5>
+          <p class="small text-muted mb-0">examprepdost@gmail.com</p>
+        </div>
+
+        <div class="info-card mb-4">
+          <div class="icon-wrapper">
+            📞
+          </div>
+          <h5 class="fw-bold mb-2">Mobile</h5>
+          <p class="small text-muted mb-0">+91 76529 26257</p>
+        </div>
+
+        <div class="info-card">
+          <div class="icon-wrapper">
+            📍
+          </div>
+          <h5 class="fw-bold mb-2">Location</h5>
+          <p class="small text-muted mb-0">India</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: FORM -->
+      <div class="col-md-8">
+        <div class="glass-card p-4 p-md-5">
+          <h4 class="fw-bold mb-4">Send Us a Message</h4>
+
+          <form method="post" action="/contacts/">
+            {% csrf_token %}
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Your Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Subject</label>
+              <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject">
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Message</label>
+              <textarea class="form-control" rows="5" id="message" name="message" placeholder="Write your message..."></textarea>
+            </div>
+
+            <button class="btn-neon w-100">Send Message</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== FAQ SECTION ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-subtitle">Quick answers to common queries</p>
+    </div>
+
+    <div class="accordion" id="faqAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a1">
+            How can I use ExamPrep Dost?
+          </button>
+        </h2>
+        <div id="a1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Simply visit our homepage and choose MCQ generator, tutorials, quizzes, or summarizer.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2">
+            Is ExamPrep Dost free to use?
+          </button>
+        </h2>
+        <div id="a2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Yes, all features are currently free and accessible to every student.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3">
+            How can I get support?
+          </button>
+        </h2>
+        <div id="a3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            You can email us anytime at <strong>examprepdost@gmail.com</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA SECTION ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="cta-section">
+      <h2 class="fw-bold mb-3">Have More Questions?</h2>
+      <p class="mb-4" style="color: rgba(255, 255, 255, 0.8);">We are here to help you with anything related to ExamPrep Dost.</p>
+      <a href="/" class="btn-neon">Back to Home</a>
+    </div>
+  </div>
+</section>
+
+{% endblock body %}

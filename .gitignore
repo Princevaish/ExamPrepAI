@@ -1,0 +1,61 @@
+# =========================
+# PYTHON
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-wheel-metadata/
+
+# =========================
+# DJANGO
+# =========================
+db.sqlite3
+staticfiles/
+media/
+local_settings.py
+
+# =========================
+# ENV & SECRETS (CRITICAL)
+# =========================
+.env
+.env.*
+*.env
+
+# =========================
+# DOCKER
+# =========================
+*.log
+docker-data/
+postgres-data/
+redis-data/
+
+# =========================
+# OS FILES
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDE / EDITOR
+# =========================
+.vscode/
+.idea/
+*.iml
+
+# =========================
+# PDF / TEMP FILES
+# =========================
+ExamPrepPDFs/
+*.pdf
+
+# =========================
+# TEST / CACHE
+# =========================
+.coverage
+.pytest_cache/
+.cache/

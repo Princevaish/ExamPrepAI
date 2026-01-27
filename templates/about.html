@@ -1,0 +1,582 @@
+
+{% extends "base.html" %}
+{% block title %}About{% endblock title %}
+{% load static %}
+
+{% block body %}
+
+<style>
+  .about-hero {
+    height: 85vh;
+    background: linear-gradient(135deg, rgba(15, 32, 39, 0.65), rgba(32, 58, 67, 0.65)), 
+                url("https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1600&q=80") center/cover fixed;
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .about-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(0, 255, 255, 0.2), transparent 60%),
+                radial-gradient(circle at 70% 50%, rgba(0, 179, 255, 0.2), transparent 60%);
+    animation: heroGlow 8s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes heroGlow {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+  }
+
+  .glass-box {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.37),
+      0 0 60px rgba(0, 255, 255, 0.3),
+      inset 0 0 40px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s ease;
+    animation: fadeIn 1.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 80px rgba(0, 255, 255, 0.5);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 32px;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.03);
+    transition: all 0.4s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 
+      0 8px 30px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(0, 200, 255, 0.5);
+    border-color: rgba(0, 200, 255, 0.4);
+  }
+
+  .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 179, 255, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover .icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 
+      0 6px 25px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(0, 255, 255, 0.6);
+  }
+
+  .icon-wrapper img {
+    width: 50px;
+    height: 50px;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #ffffff, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .stats-section {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.15), rgba(0, 179, 255, 0.15));
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    padding: 4rem 2rem;
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 0 40px rgba(255, 255, 255, 0.05);
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+
+  .stat-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: statGlow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes statGlow {
+    from { filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.5)); }
+    to { filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.8)); }
+  }
+
+  .stat-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+  }
+
+  .accordion-item {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .accordion-button {
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 1.2rem 1.5rem;
+    font-weight: 600;
+    box-shadow: none;
+  }
+
+  .accordion-button:not(.collapsed) {
+    background: rgba(0, 200, 255, 0.1);
+    color: #00ffff;
+    box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1);
+  }
+
+  .accordion-button:focus {
+    box-shadow: none;
+    border: none;
+  }
+
+  .accordion-button::after {
+    filter: brightness(0) invert(1);
+  }
+
+  .accordion-body {
+    background: rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 1.2rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.2), rgba(0, 179, 255, 0.2));
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 0 60px rgba(0, 255, 255, 0.3);
+  }
+
+  .btn-neon {
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-neon:hover {
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.9);
+    transform: translateY(-3px) scale(1.05);
+    color: #000;
+  }
+
+  .team-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 1.5rem;
+    transition: all 0.4s ease;
+  }
+
+  .team-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.4),
+      0 0 40px rgba(0, 255, 255, 0.4);
+  }
+
+  .team-card img {
+    border-radius: 16px;
+    border: 3px solid rgba(0, 255, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  h2, h3, h4, h5 {
+    color: #fff;
+  }
+
+  .text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  @media (max-width: 768px) {
+    .about-hero {
+      height: 70vh;
+      background-attachment: scroll;
+    }
+
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+    }
+
+    .glass-box {
+      padding: 2rem 1.5rem;
+    }
+  }
+
+  .team-section {
+  padding: 3rem 0;   /* reduce vertical height */
+}
+  .team-img {
+    width: 400px;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+</style>
+
+<!-- ========== HERO SECTION ========== -->
+<section class="about-hero text-white">
+  <div class="container py-5">
+    <div class="row justify-content-start">
+      <div class="col-md-8 col-lg-7">
+        <div class="glass-box p-4 p-md-5">
+          <h1 class="fw-bold display-4 mb-3">About ExamPrep Dost</h1>
+          <p class="lead mb-4">
+            Your intelligent AI-powered learning companion — helping you generate MCQs,
+            summaries, tutorials, notes, and adaptive quizzes instantly.
+          </p>
+          <a href="/" class="btn-neon">
+            Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== WHO WE ARE ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Who We Are</h2>
+      <p class="section-subtitle">Empowering students with AI-driven smart learning tools</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="glass-card text-center h-100">
+          <div class="icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Vision">
+          </div>
+          <h5 class="fw-bold mb-3">Our Vision</h5>
+          <p class="text-muted">Transform exam learning with AI automation and accuracy.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="glass-card text-center h-100">
+          <div class="icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/3209/3209993.png" alt="Mission">
+          </div>
+          <h5 class="fw-bold mb-3">Our Mission</h5>
+          <p class="text-muted">Make quality learning accessible and effortless for all.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="glass-card text-center h-100">
+          <div class="icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/942/942748.png" alt="Approach">
+          </div>
+          <h5 class="fw-bold mb-3">Our Approach</h5>
+          <p class="text-muted">Simple, fast, accurate — engineered for students.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FEATURES ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">What We Offer</h2>
+      <p class="section-subtitle">Explore the core features of ExamPrep Dost</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-card text-center h-100">
+          <div class="icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/709/709722.png" alt="MCQ">
+          </div>
+          <h6 class="fw-bold mb-2">MCQ Generator</h6>
+          <p class="small text-muted">Create exam-ready MCQs instantly.</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-card text-center h-100">
+          <div class="icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Summarizer">
+          </div>
+          <h6 class="fw-bold mb-2">AI Summarizer</h6>
+          <p class="small text-muted">Turn chapters into concise summaries.</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-card text-center h-100">
+          <div class="icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/552/552486.png" alt="Tutorials">
+          </div>
+          <h6 class="fw-bold mb-2">Smart Tutorials</h6>
+          <p class="small text-muted">Beautiful AI-generated tutorials.</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-card text-center h-100">
+          <div class="icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/906/906175.png" alt="Quiz">
+          </div>
+          <h6 class="fw-bold mb-2">AI Quiz Mode</h6>
+          <p class="small text-muted">Adaptive quizzes for smart learning.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== STATS ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="stats-section">
+      <div class="row g-4">
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-number">10K+</div>
+            <div class="stat-label">MCQs Generated</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-number">5K+</div>
+            <div class="stat-label">Summaries Created</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-number">1K+</div>
+            <div class="stat-label">Tutorials Delivered</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-number">50K+</div>
+            <div class="stat-label">Happy Students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TEAM ========== -->
+<section class="team-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Meet the Creator</h2>
+      <p class="section-subtitle">The mind behind ExamPrep Dost</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+        <div class="team-card text-center">
+          <img src="{% static 'images/princeGoldenGate.jpg' %}"
+               class="img-fluid mb-3 team-img" alt="Prince Vaish">
+          <h5 class="fw-bold mb-2 ">Prince Vaish</h5>
+          <p class="text-muted small mb-3">Developer • Designer • AI Engineer</p>
+          <p class="small text-muted">Passionate about building the future of AI-powered learning.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FAQ ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-subtitle">Your common questions, answered clearly</p>
+    </div>
+
+    <div class="accordion accordion-flush" id="faqAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1">
+            How does ExamPrep Dost work?
+          </button>
+        </h2>
+        <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            It uses advanced AI to generate MCQs, summaries, tutorials, and quizzes instantly.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2">
+            Are the notes and MCQs accurate?
+          </button>
+        </h2>
+        <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Yes — content is produced using high-quality educational LLM models.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3">
+            Can I use ExamPrep Dost for any subject?
+          </button>
+        </h2>
+        <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Yes — it works for all school, college, and competitive exam subjects.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q4">
+            Do I need coding knowledge to use it?
+          </button>
+        </h2>
+        <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            No — everything is click-based with a clean UI designed for students.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q5">
+            Is ExamPrep Dost free to use?
+          </button>
+        </h2>
+        <div id="q5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Yes — most tools are free. Premium features may be added in the future.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q6">
+            Can I generate full chapter tutorials?
+          </button>
+        </h2>
+        <div id="q6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Absolutely — the Smart Tutorials generator creates structured notes for entire chapters.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="cta-section">
+      <h2 class="fw-bold mb-3">Start Your AI-Powered Learning Today</h2>
+      <p class="mb-4" style="color: rgba(255, 255, 255, 0.8);">Generate MCQs, summaries & tutorials with one click.</p>
+      <a href="/" class="btn-neon">Back to Home</a>
+    </div>
+  </div>
+</section>
+
+{% endblock body %}

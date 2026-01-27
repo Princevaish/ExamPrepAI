@@ -1,0 +1,13 @@
+{% load socialaccount %}
+
+{% get_providers as socialaccount_providers %}
+
+{% for provider in socialaccount_providers %}
+  {% if provider.id == "google" %}
+    <a href="{% provider_login_url provider.id process=process %}" 
+       class="btn btn-google w-100">
+      <i class="bi bi-google"></i>
+      <span>Continue with Google</span>
+    </a>
+  {% endif %}
+{% endfor %}

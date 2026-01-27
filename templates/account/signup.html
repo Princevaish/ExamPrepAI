@@ -1,0 +1,126 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Sign Up" %}{% endblock %}
+
+{% block content %}
+
+<div class="text-center mb-4">
+  <h3 class="text-white-soft mb-2">Create Account</h3>
+  <p class="text-muted-custom">Join ExamPrep Dost and start learning smarter</p>
+</div>
+
+<!-- Google Sign Up (Primary) -->
+{% load socialaccount %}
+{% get_providers as socialaccount_providers %}
+
+{% if socialaccount_providers %}
+  <div class="mb-4">
+    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+  </div>
+{% endif %}
+
+<!-- Divider -->
+<div class="divider">
+  <span>or sign up with email</span>
+</div>
+
+<!-- Signup Form -->
+<form class="signup" method="post" action="{% url 'account_signup' %}">
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  <div class="mb-3">
+    <label for="{{ form.email.id_for_label }}" class="form-label">
+      {% trans "Email" %}
+    </label>
+    <input type="email" 
+           name="{{ form.email.name }}" 
+           class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+           id="{{ form.email.id_for_label }}"
+           placeholder="Enter your email"
+           value="{{ form.email.value|default:'' }}"
+           required>
+    {% if form.email.errors %}
+      <div class="invalid-feedback">
+        {{ form.email.errors }}
+      </div>
+    {% endif %}
+  </div>
+
+  {% if form.username %}
+  <div class="mb-3">
+    <label for="{{ form.username.id_for_label }}" class="form-label">
+      {% trans "Username" %}
+    </label>
+    <input type="text" 
+           name="{{ form.username.name }}" 
+           class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+           id="{{ form.username.id_for_label }}"
+           placeholder="Choose a username"
+           value="{{ form.username.value|default:'' }}">
+    {% if form.username.errors %}
+      <div class="invalid-feedback">
+        {{ form.username.errors }}
+      </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="mb-3">
+    <label for="{{ form.password1.id_for_label }}" class="form-label">
+      {% trans "Password" %}
+    </label>
+    <input type="password" 
+           name="{{ form.password1.name }}" 
+           class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+           id="{{ form.password1.id_for_label }}"
+           placeholder="Create a password"
+           required>
+    {% if form.password1.errors %}
+      <div class="invalid-feedback">
+        {{ form.password1.errors }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="mb-3">
+    <label for="{{ form.password2.id_for_label }}" class="form-label">
+      {% trans "Confirm Password" %}
+    </label>
+    <input type="password" 
+           name="{{ form.password2.name }}" 
+           class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+           id="{{ form.password2.id_for_label }}"
+           placeholder="Confirm your password"
+           required>
+    {% if form.password2.errors %}
+      <div class="invalid-feedback">
+        {{ form.password2.errors }}
+      </div>
+    {% endif %}
+  </div>
+
+  {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+  {% endif %}
+
+  <button type="submit" class="btn btn-neon w-100 mb-3">
+    {% trans "Sign Up" %}
+  </button>
+
+</form>
+
+<div class="text-center mt-4">
+  <p class="text-muted-custom small">
+    {% blocktrans %}Already have an account?{% endblocktrans %}
+    <a href="{% url 'account_login' %}" class="fw-semibold">{% trans "Sign In" %}</a>
+  </p>
+</div>
+
+{% endblock %}

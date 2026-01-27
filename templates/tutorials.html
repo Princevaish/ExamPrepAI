@@ -1,0 +1,882 @@
+{% extends "base.html" %}
+{% block title %}AI Tutorial Generator{% endblock %}
+{% block body %}
+
+<style>
+  .mcq-hero {
+    height: 75vh;
+    background: linear-gradient(135deg, rgba(15, 32, 39, 0.65), rgba(32, 58, 67, 0.65)), 
+                url("https://images.unsplash.com/photo-1593642634367-d91a135587b5?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat fixed;
+    position: relative;
+    padding: 40px 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .mcq-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(0, 255, 255, 0.2), transparent 60%),
+                radial-gradient(circle at 70% 50%, rgba(0, 179, 255, 0.2), transparent 60%);
+    animation: heroGlow 8s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes heroGlow {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+  }
+
+  .mcq-hero .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+  }
+
+  .glass-box {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.37),
+      0 0 60px rgba(0, 255, 255, 0.3),
+      inset 0 0 40px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s ease;
+    animation: fadeIn 1.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 80px rgba(0, 255, 255, 0.5);
+  }
+
+  .glass-btn {
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    border: none;
+    backdrop-filter: blur(6px);
+    padding: 12px 32px;
+    border-radius: 50px;
+    color: #000 !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .glass-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.9);
+    color: #000 !important;
+  }
+
+  .animate-fade {
+    animation: fadeIn 1.2s ease-in-out;
+  }
+
+  @media (max-width: 768px) {
+    .mcq-hero {
+      height: 60vh;
+    }
+  }
+
+  .glass-card-neo {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(20px);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.37),
+      0 0 60px rgba(0, 255, 255, 0.2),
+      inset 0 0 40px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s ease;
+    animation: slideUp 0.8s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass-card-neo:hover {
+    transform: translateY(-6px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 80px rgba(0, 255, 255, 0.4);
+    border-color: rgba(0, 255, 255, 0.4);
+  }
+
+  .icon-circle {
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 179, 255, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(12px);
+    font-size: 1.8rem;
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+    animation: iconFloat 3s ease-in-out infinite;
+  }
+
+  @keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .glass-input,
+  textarea.glass-input,
+  select.glass-input,
+  .form-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
+  }
+
+  .glass-input:focus,
+  textarea.glass-input:focus,
+  select.glass-input:focus,
+  .form-select:focus {
+    background:  rgba(15, 32, 39, 0.98);
+    border-color: #00ffff;
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.6),
+      inset 0 0 15px rgba(0, 255, 255, 0.3);
+    color: #fff;
+    outline: none;
+  }
+
+  .glass-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .form-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  }
+
+  .big-btn {
+    padding: 16px 24px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.4s ease;
+  }
+
+  .shadow-neon-blue {
+    box-shadow: 0 0 25px rgba(0, 153, 255, 0.6);
+  }
+
+  .shadow-neon-green {
+    box-shadow: 0 0 25px rgba(40, 167, 69, 0.6);
+  }
+
+  .pulse-hover:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 40px rgba(0, 153, 255, 0.8);
+    animation: pulse 0.6s ease-in-out;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translateY(-3px) scale(1.02); }
+    50% { transform: translateY(-3px) scale(1.05); }
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out forwards;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #00b3ff, #0088ff);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0, 179, 255, 0.8);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #28a745, #00ff88);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(135deg, #00ff88, #20c997);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+  }
+
+  .neon-border {
+    border: 1px solid rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+  }
+
+  .download-text {
+    color: #000;
+    font-weight: 600;
+  }
+
+  .tutorial-output-box {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    transition: all 0.4s ease;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.03);
+  }
+
+  .tutorial-output-box:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 200, 255, 0.4);
+    box-shadow: 
+      0 6px 30px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(0, 200, 255, 0.3);
+  }
+
+  .tutorial-text {
+    background: linear-gradient(135deg, rgba(13, 17, 23, 0.95), rgba(22, 27, 34, 0.95));
+    color: #e6edf3;
+    border-radius: 16px;
+    padding: 28px;
+    font-size: 15px;
+    line-height: 1.9;
+    max-height: 700px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .tutorial-text::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .tutorial-text::-webkit-scrollbar-track {
+    background: rgba(22, 27, 34, 0.8);
+    border-radius: 10px;
+  }
+
+  .tutorial-text::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #30363d, #484f58);
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0, 255, 255, 0.3);
+  }
+
+  .tutorial-text::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #484f58, #58606a);
+  }
+
+  .glow-pulse {
+    animation: glow 1.5s infinite alternate;
+  }
+
+  @keyframes glow {
+    from { 
+      box-shadow: 0 0 8px rgba(0, 255, 150, 0.4);
+      text-shadow: 0 0 10px rgba(0, 255, 150, 0.3);
+    }
+    to { 
+      box-shadow: 0 0 20px rgba(0, 255, 150, 0.8);
+      text-shadow: 0 0 15px rgba(0, 255, 150, 0.6);
+    }
+  }
+
+  .badge {
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .badge.bg-success {
+    background: linear-gradient(135deg, #28a745, #00ff88) !important;
+    color: #000;
+  }
+
+  .alert-danger {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid rgba(220, 53, 69, 0.5);
+    color: #ff6b6b;
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(220, 53, 69, 0.3);
+  }
+
+  h3, h4 {
+    color: #fff;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* ===== ASYNC LOADING STYLES (ADDED) ===== */
+  .loading-spinner {
+    border: 4px solid rgba(0, 255, 255, 0.3);
+    border-top: 4px solid #00ffff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-container {
+    text-align: center;
+    padding: 3rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .alert-info {
+    background: rgba(0, 191, 255, 0.15);
+    border: 1px solid rgba(0, 191, 255, 0.4);
+    color: #00bfff;
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 191, 255, 0.2);
+  }
+  /* ===== END ASYNC LOADING STYLES ===== */
+
+  @media (max-width: 768px) {
+    .big-btn {
+      font-size: 1rem;
+      padding: 14px 20px;
+    }
+
+    .glass-box {
+      padding: 2rem 1.5rem;
+    }
+
+    .tutorial-text {
+      padding: 20px;
+      font-size: 14px;
+    }
+  }
+
+/* ===== PAGINATION BUTTON UI ENHANCEMENT ===== */
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem;
+
+  /* GLASS PANEL */
+  background: linear-gradient(
+    135deg,
+    rgba(0, 40, 55, 0.55),
+    rgba(0, 70, 90, 0.45)
+  );
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  /* ROUNDED PROFESSIONAL SHAPE */
+  border-radius: 22px;
+
+  /* NEON GLASS BORDER */
+  border: 1px solid rgba(0, 255, 255, 0.28);
+
+  /* DEPTH + SOFT GLOW */
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.35),
+    0 0 25px rgba(0, 200, 255, 0.25),
+    inset 0 0 25px rgba(255, 255, 255, 0.04);
+
+  transition: box-shadow 0.3s ease;
+}
+.pagination-controls:hover {
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.45),
+    0 0 35px rgba(0, 220, 255, 0.4),
+    inset 0 0 30px rgba(255, 255, 255, 0.06);
+}
+
+
+.pagination-btn {
+  position: relative;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.85), rgba(0, 140, 255, 0.85));
+  border: 1px solid rgba(0, 255, 255, 0.35);
+  color: #001014;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  transition: 
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.3s ease;
+  box-shadow:
+    0 6px 20px rgba(0, 180, 255, 0.35),
+    inset 0 0 0 rgba(255, 255, 255, 0);
+  will-change: transform, box-shadow;
+}
+
+.pagination-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    120deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35),
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, rgba(0, 255, 255, 1), rgba(0, 170, 255, 1));
+  box-shadow:
+    0 10px 30px rgba(0, 200, 255, 0.55),
+    0 0 18px rgba(0, 255, 255, 0.6);
+}
+
+.pagination-btn:hover:not(:disabled)::after {
+  opacity: 0.6;
+}
+
+.pagination-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow:
+    0 6px 18px rgba(0, 180, 255, 0.4),
+    inset 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.pagination-btn:disabled {
+  background: rgba(40, 60, 70, 0.45);
+  border: 1px solid rgba(120, 160, 170, 0.25);
+  color: rgba(200, 220, 225, 0.35);
+  cursor: not-allowed;
+  box-shadow: none;
+  filter: grayscale(0.4);
+}
+
+.page-indicator {
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: rgba(220, 250, 255, 0.95);
+  text-align: center;
+  padding: 0.35rem 1rem;
+  border-radius: 12px;
+  background: rgba(0, 40, 60, 0.35);
+  border: 1px solid rgba(0, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 0 12px rgba(0, 200, 255, 0.25),
+    inset 0 0 10px rgba(0, 255, 255, 0.12);
+}
+
+</style>
+
+<!-- ========== HERO SECTION ========== -->
+<section class="mcq-hero d-flex align-items-center text-white">
+  <div class="overlay"></div>
+
+  <div class="container position-relative">
+    <div class="col-md-8 col-lg-6 glass-box p-4 p-md-5 animate-fade">
+      <h1 class="fw-bold display-4 mb-3">AI Tutorial Builder</h1>
+      <p class="lead mb-4">
+        Generate clean, structured, professional chapter-wise tutorials instantly with AI.
+      </p>
+
+      <a href="#tutorialForm" class="glass-btn btn-lg">
+        Create Tutorial
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= MAIN CONTENT ========================= -->
+<div class="container my-5">
+
+  <!-- ERROR MESSAGE -->
+  {% if error %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>⚠ Error:</strong> {{ error }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endif %}
+
+  <!-- ===== ASYNC LOADING MESSAGE (ADDED) ===== -->
+  {% if task_id %}
+  <div class="glass-card-neo p-4 p-md-5 shadow-xxl mb-4 animate-slide-up" id="loadingSection">
+    <div class="loading-container">
+      <div class="loading-spinner mb-4"></div>
+      <h4 class="fw-bold mb-3">⚡ Generating Tutorial...</h4>
+      <p class="lead mb-0">{{ message|default:"Please wait while we generate your tutorial. This may take a few seconds." }}</p>
+      <p class="text-muted mt-2" style="color: rgba(255, 255, 255, 0.6) !important;">
+      </p>
+    </div>
+  </div>
+  {% endif %}
+  <!-- ===== END ASYNC LOADING MESSAGE ===== -->
+
+  <div class="glass-card-neo p-4 p-md-5 shadow-xxl animate-slide-up">
+
+    <div class="d-flex align-items-center mb-4">
+      <div class="icon-circle me-3">
+        <i class="bi bi-journal-text text-primary"></i>
+      </div>
+      <h3 class="fw-bold mb-0">Build Your Coding Tutorial</h3>
+    </div>
+
+    <form id="tutorialForm" method="post" action="/ai/tutorial/async/">
+      {% csrf_token %}
+
+      <!-- TEXTAREA -->
+      <label class="form-label fw-bold">Enter Topic / Notes</label>
+      <textarea class="form-control form-control-lg glass-input subtle-border mb-4"
+        rows="5" name="topic" required
+        placeholder="Enter your chapter, topic or raw notes for tutorial generation...">{{ topic|default:"" }}</textarea>
+
+      <!-- LENGTH -->
+      <label class="form-label fw-bold">Tutorial Depth</label>
+      <select class="form-select form-select-lg glass-input subtle-border mb-4" name="depth">
+        <option value="short" {% if depth == 'short' %}selected{% endif %}>Short Overview (5-7 pages)</option>
+        <option value="medium" {% if depth == 'medium' or not depth %}selected{% endif %}>Detailed Explanation (10-12 pages)</option>
+        <option value="full" {% if depth == 'full' %}selected{% endif %}>Full-Length Chapter (15+ pages)</option>
+      </select>
+
+      <!-- BUTTONS -->
+      <div class="d-flex gap-3">
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 big-btn pulse-hover shadow-neon-blue">
+          📘 Generate Tutorial
+        </button>
+
+        <!-- ===== ASYNC PDF DOWNLOAD BUTTON (ADDED) ===== -->
+        <a href="/ai/download_tutorial_pdf/" id="pdfDownloadBtn" class="btn btn-lg w-50 glass-btn neon-border neon-download" style="display: none;">
+          <span class="download-text">⬇ Download PDF</span>
+        </a>
+        <!-- ===== END ASYNC PDF DOWNLOAD BUTTON ===== -->
+
+      </div>
+
+    </form>
+
+  </div>
+
+
+  <!-- ========================= OUTPUT ========================= -->
+  {% if output %}
+  <div class="glass-card-neo p-4 p-md-5 shadow-xxl mt-5 animate-slide-up" id="tutorialOutput">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex align-items-center">
+        <div class="icon-circle me-3">
+          <i class="bi bi-check-circle text-success"></i>
+        </div>
+        <h4 class="fw-bold mb-0">Generated Tutorial</h4>
+      </div>
+      <span class="badge bg-success p-2 px-3 glow-pulse">✓ AI Generated</span>
+    </div>
+
+    <div class="tutorial-output-box p-4">
+      <pre class="tutorial-text">{{ output }}</pre>
+    </div>
+
+    <!-- Download PDF Button -->
+    <a href="/ai/download_tutorial_pdf/" class="btn btn-lg btn-success w-100 mt-4 shadow-neon-green pulse-hover">
+      📥 Download Tutorial PDF
+    </a>
+
+  </div>
+  {% endif %}
+
+  <!-- ===== ASYNC RESULTS CONTAINER (ADDED) ===== -->
+  <div id="asyncTutorialResults"></div>
+  <!-- ===== END ASYNC RESULTS CONTAINER ===== -->
+
+</div>
+
+<!-- Auto-scroll to tutorial output if exists -->
+{% if output %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tutorialSection = document.getElementById('tutorialOutput');
+  if (tutorialSection) {
+    setTimeout(() => {
+      tutorialSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+  }
+});
+</script>
+{% endif %}
+
+<!-- ===== ASYNC POLLING SCRIPT (ADDED) ===== -->
+{% if task_id %}
+<script>
+(function() {
+  const taskId = "{{ task_id }}";
+  const statusUrl = `/ai/task-status/${taskId}/`;
+  const topicName = "{{ topic|default:'Generated Tutorial' }}";
+  let pollInterval;
+  let tutorialPages = [];
+  let currentPage = 0;
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+          }
+}
+}
+return cookieValue;
+}
+function pollTaskStatus() {
+fetch(statusUrl, {
+method: 'GET',
+headers: {
+'X-CSRFToken': getCookie('csrftoken'),
+'Content-Type': 'application/json'
+}
+})
+.then(response => response.json())
+.then(data => {
+console.log('[POLL] Task Status:', data.status);
+  if (data.ready && data.successful) {
+    clearInterval(pollInterval);
+    console.log('[SUCCESS] Task completed');
+    renderTutorial(data.result);
+  } else if (data.status === 'FAILURE') {
+    clearInterval(pollInterval);
+    console.error('[ERROR] Task failed');
+    showError('Tutorial generation failed. Please try again.');
+  }
+})
+.catch(error => {
+  console.error('[ERROR] Polling failed:', error);
+  clearInterval(pollInterval);
+  showError('Error checking task status. Please refresh the page.');
+});
+}
+function splitIntoPages(tutorialText) {
+const charsPerPage = 3000;
+const pages = [];
+const lines = tutorialText.split('\n');
+let currentPageContent = '';
+for (let line of lines) {
+  if ((currentPageContent + line + '\n').length > charsPerPage && currentPageContent.length > 0) {
+    pages.push(currentPageContent.trim());
+    currentPageContent = line + '\n';
+  } else {
+    currentPageContent += line + '\n';
+  }
+}
+
+if (currentPageContent.trim().length > 0) {
+  pages.push(currentPageContent.trim());
+}
+
+return pages.length > 0 ? pages : [tutorialText];
+}
+function renderTutorial(tutorialText) {
+const loadingSection = document.getElementById('loadingSection');
+if (loadingSection) {
+loadingSection.remove();
+}
+if (!tutorialText || tutorialText.trim().length === 0) {
+  showError('No tutorial was generated. Please try again.');
+  return;
+}
+
+tutorialPages = splitIntoPages(tutorialText);
+currentPage = 0;
+
+const resultsContainer = document.getElementById('asyncTutorialResults');
+
+let html = `
+  <div class="glass-card-neo p-4 p-md-5 shadow-xxl mt-5 animate-slide-up" id="tutorialOutput">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex align-items-center">
+        <div class="icon-circle me-3">
+          <i class="bi bi-check-circle text-success"></i>
+        </div>
+        <h4 class="fw-bold mb-0">Generated Tutorial</h4>
+      </div>
+      <span class="badge bg-success p-2 px-3 glow-pulse">✓ AI Generated</span>
+    </div>
+
+    <div class="tutorial-output-box p-4">
+      <pre class="tutorial-text" id="tutorialContent">${escapeHtml(tutorialPages[0])}</pre>
+    </div>
+
+    ${tutorialPages.length > 1 ? `
+    <div class="pagination-controls mt-4">
+      <button id="prevPage" class="pagination-btn" disabled>
+        <i class="bi bi-chevron-left"></i> Previous
+      </button>
+      <span class="page-indicator" id="pageIndicator">Page 1 of ${tutorialPages.length}</span>
+      <button id="nextPage" class="pagination-btn">
+        Next <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+    ` : ''}
+
+    <a href="/ai/download_tutorial_pdf/" class="btn btn-lg btn-success w-100 mt-4 shadow-neon-green pulse-hover">
+      📥 Download Tutorial PDF
+    </a>
+  </div>
+`;
+
+resultsContainer.innerHTML = html;
+
+if (tutorialPages.length > 1) {
+  setupPagination();
+}
+
+const pdfBtn = document.getElementById('pdfDownloadBtn');
+if (pdfBtn) {
+  pdfBtn.style.display = 'inline-block';
+}
+
+setTimeout(() => {
+  const resultsSection = document.getElementById('tutorialOutput');
+  if (resultsSection) {
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}, 300);
+
+storeTutorialInSession(tutorialText);
+}
+function setupPagination() {
+const prevBtn = document.getElementById('prevPage');
+const nextBtn = document.getElementById('nextPage');
+const pageIndicator = document.getElementById('pageIndicator');
+const tutorialContent = document.getElementById('tutorialContent');
+prevBtn.addEventListener('click', () => {
+  if (currentPage > 0) {
+    currentPage--;
+    tutorialContent.textContent = tutorialPages[currentPage];
+    updatePaginationControls();
+  }
+});
+
+nextBtn.addEventListener('click', () => {
+  if (currentPage < tutorialPages.length - 1) {
+    currentPage++;
+    tutorialContent.textContent = tutorialPages[currentPage];
+    updatePaginationControls();
+  }
+});
+
+function updatePaginationControls() {
+  prevBtn.disabled = currentPage === 0;
+  nextBtn.disabled = currentPage === tutorialPages.length - 1;
+  pageIndicator.textContent = `Page ${currentPage + 1} of ${tutorialPages.length}`;
+}
+}
+function escapeHtml(text) {
+const div = document.createElement('div');
+div.textContent = text;
+return div.innerHTML;
+}
+function storeTutorialInSession(tutorialText) {
+fetch('/ai/store-tutorial/', {
+method: 'POST',
+headers: {
+'X-CSRFToken': getCookie('csrftoken'),
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({
+tutorial_text: tutorialText,
+topic: topicName
+})
+})
+.then(response => response.json())
+.then(data => {
+console.log('[SESSION] Tutorial stored for PDF download');
+})
+.catch(error => {
+console.error('[ERROR] Failed to store tutorial:', error);
+});
+}
+function showError(message) {
+const loadingSection = document.getElementById('loadingSection');
+if (loadingSection) {
+loadingSection.remove();
+}
+const resultsContainer = document.getElementById('asyncTutorialResults');
+resultsContainer.innerHTML = `
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Error:</strong> ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+`;
+}
+pollInterval = setInterval(pollTaskStatus, 2000);
+pollTaskStatus();
+})();
+</script>
+{% endif %}
+<!-- ===== END ASYNC POLLING SCRIPT ===== -->
+{% endblock %}

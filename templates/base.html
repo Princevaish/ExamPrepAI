@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock title %} | ExamPrep Dost</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.6/build/spline-viewer.js"></script>
+    
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+        background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .bg-glow {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(140px);
+        opacity: 0.4;
+        animation: float 8s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .glow-1 {
+        width: 500px;
+        height: 500px;
+        background: rgba(0, 255, 255, 0.5);
+        top: -150px;
+        left: -150px;
+        animation-delay: 0s;
+      }
+
+      .glow-2 {
+        width: 600px;
+        height: 600px;
+        background: rgba(33, 150, 243, 0.4);
+        bottom: -200px;
+        right: -200px;
+        animation-delay: 2s;
+      }
+
+      .glow-3 {
+        width: 400px;
+        height: 400px;
+        background: rgba(0, 229, 255, 0.3);
+        top: 50%;
+        right: 10%;
+        animation-delay: 4s;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -40px) scale(1.05); }
+        66% { transform: translate(-20px, 30px) scale(0.95); }
+      }
+
+      .home-carousel { 
+        margin-top: 15px; 
+        position: relative;
+        z-index: 1;
+      }
+
+      .carousel-img {
+        height: 550px;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      .glass-nav {
+        backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 255, 255, 0.15);
+        position: relative;
+        z-index: 1000;
+      }
+
+      .navbar-nav .nav-link {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        border-radius: 8px;
+      }
+
+      .navbar-nav .nav-link:hover {
+        transform: scale(1.05);
+        color: #00ffff !important;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        background: rgba(0, 255, 255, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.4rem;
+        color: #fff !important;
+        transition: all 0.3s ease;
+        text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+      }
+
+      .navbar-brand:hover {
+        transform: scale(1.08);
+        text-shadow: 0 0 20px rgba(0, 255, 255, 0.9);
+      }
+
+      .dropdown-menu {
+        border-radius: 16px;
+        animation: dropdownFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(25px);
+        background: rgba(15, 32, 39, 0.92);
+        border: 1px solid rgba(0, 255, 255, 0.3);
+        box-shadow: 
+          0 12px 40px rgba(0, 0, 0, 0.5),
+          0 0 30px rgba(0, 255, 255, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        padding: 0.5rem;
+        margin-top: 0.5rem !important;
+      }
+
+      @keyframes dropdownFadeIn {
+        from { 
+          opacity: 0; 
+          transform: translateY(-10px) scale(0.95);
+          filter: blur(5px);
+        }
+        to { 
+          opacity: 1; 
+          transform: translateY(0) scale(1);
+          filter: blur(0);
+        }
+      }
+
+      .dropdown-item {
+        color: rgba(255, 255, 255, 0.85) !important;
+        padding: 0.65rem 1rem;
+        border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 500;
+        font-size: 0.95rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .dropdown-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 3px;
+        height: 100%;
+        background: linear-gradient(180deg, #00ffff, #00b3ff);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+        border-radius: 0 3px 3px 0;
+      }
+
+      .dropdown-item:hover::before {
+        transform: scaleY(1);
+      }
+
+      .dropdown-item:hover {
+        background: rgba(0, 255, 255, 0.15);
+        color: #00ffff !important;
+        transform: translateX(8px);
+        box-shadow: 
+          0 4px 15px rgba(0, 255, 255, 0.3),
+          inset 0 0 20px rgba(0, 255, 255, 0.1);
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+      }
+
+      .dropdown-item:active {
+        background: rgba(0, 255, 255, 0.25);
+        color: #00ffff !important;
+      }
+
+      .dropdown-item.text-danger {
+        color: rgba(255, 107, 107, 0.9) !important;
+      }
+
+      .dropdown-item.text-danger::before {
+        background: linear-gradient(180deg, #ff6b6b, #ff4757);
+      }
+
+      .dropdown-item.text-danger:hover {
+        background: rgba(255, 107, 107, 0.15);
+        color: #ff6b6b !important;
+        box-shadow: 
+          0 4px 15px rgba(255, 107, 107, 0.3),
+          inset 0 0 20px rgba(255, 107, 107, 0.1);
+        text-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+      }
+
+      .dropdown-divider {
+        border-color: rgba(0, 255, 255, 0.2);
+        margin: 0.5rem 0;
+        box-shadow: 0 1px 2px rgba(0, 255, 255, 0.1);
+      }
+
+      .dropdown-menu .px-3 {
+        background: rgba(0, 255, 255, 0.05);
+        border-radius: 12px;
+        margin-bottom: 0.5rem;
+        padding: 1rem !important;
+        border: 1px solid rgba(0, 255, 255, 0.15);
+      }
+
+      .dropdown-menu .border-bottom {
+        border-color: rgba(0, 255, 255, 0.2) !important;
+        box-shadow: 0 1px 3px rgba(0, 255, 255, 0.1);
+      }
+
+      .dropdown-menu strong {
+        color: #fff;
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+      }
+
+      .dropdown-menu .text-muted {
+        color: rgba(255, 255, 255, 0.5) !important;
+      }
+
+      .dropdown-menu img.rounded-circle {
+        border: 3px solid #00ffff !important;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+        transition: all 0.3s ease;
+      }
+
+      .dropdown-menu img.rounded-circle:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.9);
+      }
+
+      .profile-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid rgba(0, 255, 255, 0.8);
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
+        object-fit: cover;
+      }
+
+      .profile-dropdown-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .profile-dropdown-toggle:hover {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+      }
+
+      .alert {
+        border-radius: 12px;
+        border: none;
+        backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 10;
+      }
+
+      .alert-success {
+        background: rgba(0, 255, 0, 0.15);
+        color: #00ff00;
+        border: 1px solid rgba(0, 255, 0, 0.3);
+      }
+
+      .alert-danger {
+        background: rgba(255, 0, 0, 0.15);
+        color: #ff6b6b;
+        border: 1px solid rgba(255, 0, 0, 0.3);
+      }
+
+      .alert-warning {
+        background: rgba(255, 193, 7, 0.15);
+        color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+      }
+
+      .alert-info {
+        background: rgba(0, 191, 255, 0.15);
+        color: #00bfff;
+        border: 1px solid rgba(0, 191, 255, 0.3);
+      }
+
+      .glass-footer {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        animation: footerFadeUp 0.8s ease;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 255, 255, 0.1);
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes footerFadeUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .footer-title {
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        position: relative;
+        color: #fff;
+      }
+
+      .footer-title::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background: linear-gradient(90deg, #00ffff, #00b3ff);
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.9);
+      }
+
+      .footer-link {
+        display: inline-block;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 3px 0;
+      }
+
+      .footer-link:hover {
+        color: #00ffff;
+        transform: translateX(6px);
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+      }
+
+      .footer-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 255, 255, 0.15);
+        color: #00ffff;
+        margin-right: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+        text-decoration: none;
+      }
+
+      .footer-icon:hover {
+        background: linear-gradient(135deg, #00ffff, #00b3ff);
+        color: #000;
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.9);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 12px;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .glass-footer p,
+      .glass-footer .small {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .glass-footer .text-primary {
+        color: #00ffff !important;
+      }
+
+      .container,
+      .container-fluid {
+        position: relative;
+        z-index: 1;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .text-muted {
+        color: rgba(255, 255, 255, 0.6) !important;
+      }
+
+      .carousel-caption h3 {
+        text-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 255, 0.5);
+      }
+
+      .carousel-caption p {
+        text-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+      }
+    </style>
+  </head>
+
+  <body>
+
+<div class="bg-glow glow-1"></div>
+<div class="bg-glow glow-2"></div>
+<div class="bg-glow glow-3"></div>
+
+<nav class="navbar navbar-expand-lg glass-nav sticky-top py-3">
+  <div class="container-fluid">
+
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="32" class="me-2">
+      ExamPrep Dost
+    </a>
+
+    <button class="navbar-toggler text-white" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about">About Us</a></li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            Services
+          </a>
+          <ul class="dropdown-menu shadow-lg border-0">
+            <li><a class="dropdown-item" href="/mcq/">MCQ Generator</a></li>
+            <li><a class="dropdown-item" href="/summary/">Summarizer</a></li>
+            <li><a class="dropdown-item" href="/tutorial/">Smart Tutorials</a></li>
+            <li><a class="dropdown-item" href="/quiz/">AI Quiz Mode</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/services/">Services page</a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item"><a class="nav-link" href="/contacts">Contact</a></li>
+      </ul>
+
+      <ul class="navbar-nav ms-auto align-items-center">
+
+        {% if user.is_authenticated %}
+        
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle profile-dropdown-toggle"
+             href="#" data-bs-toggle="dropdown" id="profileDropdown">
+
+            {% if user.socialaccount_set.all.0.get_avatar_url %}
+              <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
+                   class="profile-avatar"
+                   alt="Profile">
+            {% else %}
+              <i class="bi bi-person-circle fs-4"></i>
+            {% endif %}
+
+            <span class="fw-semibold">{{ user.first_name|default:user.username|default:"User" }}</span>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2"
+              style="min-width:240px;">
+            <li class="px-3 py-2 text-center border-bottom">
+              {% if user.socialaccount_set.all.0.get_avatar_url %}
+                <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
+                     class="rounded-circle mb-2"
+                     width="60" height="60"
+                     style="border: 3px solid #00ffff;"
+                     alt="Profile">
+              {% endif %}
+              <div>
+                <strong class="d-block">{{ user.get_full_name|default:user.username|default:"User" }}</strong>
+                <small class="text-muted">{{ user.email }}</small>
+              </div>
+            </li>
+
+            <li><hr class="dropdown-divider my-0"></li>
+
+            <li>
+              <a class="dropdown-item text-danger fw-semibold d-flex align-items-center gap-2 py-2"
+                 href="{% url 'account_logout' %}">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        {% endif %}
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{message.tags}} alert-dismissible fade show my-0">
+  <strong>{{ message }}</strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+
+{% block body %}{% endblock body %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<footer class="glass-footer pt-5 mt-5">
+  <div class="container">
+
+    <div class="row gy-4">
+
+      <div class="col-md-4">
+        <h5 class="footer-title mb-3">ExamPrep Dost</h5>
+        <p class="small">
+          Your AI-powered study partner — generate MCQs, summaries,
+          tutorials, and quizzes instantly with smart learning insights.
+        </p>
+
+        <div class="mt-3">
+          <a href="https://www.linkedin.com/in/prince-vaish-43a40636a/" class="footer-icon"><i class="bi bi-linkedin"></i></a>
+          <a href="https://github.com/Princevaish" class="footer-icon"><i class="bi bi-github"></i></a>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <h6 class="footer-title mb-3">Quick Links</h6>
+        <ul class="list-unstyled small">
+          <li><a href="/" class="footer-link">🏠 Home</a></li>
+          <li><a href="/about" class="footer-link">ℹ️ About Us</a></li>
+          <li><a href="/services" class="footer-link">⚙️ Services</a></li>
+          <li><a href="/contacts" class="footer-link">📞 Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-4">
+        <h6 class="footer-title mb-3">Contact</h6>
+        <p class="small mb-2">
+          <i class="bi bi-envelope-fill me-2 text-primary"></i>
+          examprepdost@gmail.com
+        </p>
+        <p class="small mb-2">
+          <i class="bi bi-globe2 me-2 text-primary"></i>
+          www.examprepdost.com
+        </p>
+        <p class="small">
+          <i class="bi bi-geo-alt-fill me-2 text-primary"></i>
+          India
+        </p>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom text-center">
+      © 2025 <strong>ExamPrep Dost</strong> — Crafted with ❤️ & AI
+    </div>
+
+  </div>
+</footer>
+
+</body>
+</html>

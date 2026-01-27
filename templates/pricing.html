@@ -1,0 +1,1058 @@
+{% extends "base.html" %}
+{% block title %}Pricing - ExamPrep Dost{% endblock title %}
+
+{% block body %}
+
+<style>
+  /* ========================================
+     PRICING PAGE GLOBAL STYLES
+     ======================================== */
+  body {
+    background: linear-gradient(135deg, #0a1828 0%, #1a2f3f 50%, #0f1e2a 100%);
+    min-height: 100vh;
+  }
+
+  /* ========================================
+     PRICING HERO SECTION
+     ======================================== */
+  .pricing-hero {
+    position: relative;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 5rem 0 3rem 0;
+    margin-bottom: 4rem;
+    opacity: 0;
+    animation: heroFadeIn 1.4s ease-out 0.3s forwards;
+  }
+
+  @keyframes heroFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+      filter: blur(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  .pricing-hero-glow {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,255,0.25), transparent);
+    filter: blur(80px);
+    animation: glowFloat 12s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .pricing-hero-glow.glow-1 {
+    top: -150px;
+    left: 10%;
+  }
+
+  .pricing-hero-glow.glow-2 {
+    bottom: -150px;
+    right: 10%;
+    animation-delay: 4s;
+  }
+
+  @keyframes glowFloat {
+    0%, 100% { 
+      transform: translate(0, 0) scale(1);
+      opacity: 0.4;
+    }
+    50% { 
+      transform: translate(50px, -50px) scale(1.15);
+      opacity: 0.7;
+    }
+  }
+
+  .pricing-hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .pricing-hero-badge {
+    display: inline-block;
+    background: rgba(0, 255, 255, 0.12);
+    border: 1px solid rgba(0, 255, 255, 0.35);
+    color: #00ffff;
+    padding: 0.6rem 1.8rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: badgePulse 3s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  @keyframes badgePulse {
+    0%, 100% { 
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      border-color: rgba(0, 255, 255, 0.35);
+    }
+    50% { 
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+      border-color: rgba(0, 255, 255, 0.6);
+    }
+  }
+
+  .pricing-hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #ffffff, #00ffff, #00b3ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.4));
+    animation: titleGlow 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes titleGlow {
+    from { filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.4)); }
+    to { filter: drop-shadow(0 0 50px rgba(0, 255, 255, 0.7)); }
+  }
+
+  .pricing-hero-subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* ========================================
+     PRICING CARDS SECTION
+     ======================================== */
+  .pricing-cards-section {
+    padding: 4rem 0 6rem 0;
+    position: relative;
+    opacity: 0;
+    transform: translateY(60px);
+    filter: blur(10px);
+    transition: opacity 1s ease-out, transform 1s ease-out, filter 1s ease-out;
+  }
+
+  .pricing-cards-section.in-view {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  .pricing-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3rem 2rem;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(50px) scale(0.95);
+    filter: blur(8px);
+  }
+
+  .pricing-card.in-view {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+
+  .pricing-card:nth-child(1) { transition-delay: 0.1s; }
+  .pricing-card:nth-child(2) { transition-delay: 0.25s; }
+  .pricing-card:nth-child(3) { transition-delay: 0.4s; }
+
+  .pricing-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.08), rgba(0, 179, 255, 0.08));
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+
+  .pricing-card:hover::before {
+    opacity: 1;
+  }
+
+  .pricing-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 
+      0 25px 60px rgba(0, 0, 0, 0.4),
+      0 0 50px rgba(0, 255, 255, 0.4),
+      inset 0 0 40px rgba(255, 255, 255, 0.04);
+    border-color: rgba(0, 255, 255, 0.5);
+  }
+
+  /* MOST POPULAR PLAN STYLING */
+  .pricing-card.popular {
+    border: 2px solid rgba(0, 255, 255, 0.6);
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.3),
+      0 0 40px rgba(0, 255, 255, 0.4);
+    transform: scale(1.05);
+    z-index: 2;
+  }
+
+  .pricing-card.popular.in-view {
+    transform: scale(1.05);
+  }
+
+  .pricing-card.popular:hover {
+    transform: translateY(-18px) scale(1.08);
+    box-shadow: 
+      0 30px 80px rgba(0, 0, 0, 0.5),
+      0 0 70px rgba(0, 255, 255, 0.7),
+      inset 0 0 50px rgba(255, 255, 255, 0.06);
+  }
+
+  .popular-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.7);
+    animation: badgeFloat 3s ease-in-out infinite;
+  }
+
+  @keyframes badgeFloat {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-5px); }
+  }
+
+  .plan-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .plan-price {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .price-amount {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .price-currency {
+    font-size: 1.8rem;
+    vertical-align: super;
+  }
+
+  .price-period {
+    display: block;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 0.5rem;
+    font-weight: 300;
+  }
+
+  .plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 2.5rem 0;
+  }
+
+  .plan-features li {
+    padding: 0.9rem 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .plan-features li:last-child {
+    border-bottom: none;
+  }
+
+  .feature-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: #00ffff;
+    font-weight: bold;
+  }
+
+  .feature-icon.disabled {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-pricing {
+    width: 100%;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    border: none;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-pricing-outline {
+    background: transparent;
+    border: 2px solid rgba(0, 255, 255, 0.4);
+    color: #00ffff;
+  }
+
+  .btn-pricing-outline:hover {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: rgba(0, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    transform: translateY(-3px);
+    color: #00ffff;
+  }
+
+  .btn-pricing-primary {
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    color: #000;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  }
+
+  .btn-pricing-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+  }
+
+  .btn-pricing-primary:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn-pricing-primary:hover {
+    box-shadow: 0 0 60px rgba(0, 255, 255, 1);
+    transform: translateY(-5px) scale(1.03);
+    color: #000;
+  }
+
+  /* ========================================
+     FEATURE COMPARISON SECTION
+     ======================================== */
+  .comparison-section {
+    padding: 5rem 0;
+    position: relative;
+    opacity: 0;
+    transform: translateY(60px);
+    filter: blur(10px);
+    transition: opacity 1s ease-out, transform 1s ease-out, filter 1s ease-out;
+  }
+
+  .comparison-section.in-view {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #ffffff, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.3));
+  }
+
+  .section-description {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .comparison-table {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.3s ease;
+    align-items: center;
+  }
+
+  .comparison-row:hover {
+    background: rgba(0, 255, 255, 0.05);
+  }
+
+  .comparison-row.header {
+    background: rgba(0, 255, 255, 0.1);
+    font-weight: 700;
+    color: #00ffff;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 0.85rem;
+  }
+
+  .comparison-feature {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+  }
+
+  .comparison-check {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #00ffff;
+  }
+
+  .comparison-check.disabled {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* ========================================
+     FAQ SECTION
+     ======================================== */
+  .faq-section {
+    padding: 5rem 0;
+    position: relative;
+    opacity: 0;
+    transform: translateY(60px);
+    filter: blur(10px);
+    transition: opacity 1s ease-out, transform 1s ease-out, filter 1s ease-out;
+  }
+
+  .faq-section.in-view {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  .faq-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .faq-item {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: all 0.4s ease;
+  }
+
+  .faq-item:hover {
+    border-color: rgba(0, 255, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .faq-question {
+    padding: 1.8rem 2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+    font-size: 1.05rem;
+    transition: color 0.3s ease;
+  }
+
+  .faq-question:hover {
+    color: #00ffff;
+  }
+
+  .faq-icon {
+    font-size: 1.5rem;
+    color: #00ffff;
+    transition: transform 0.3s ease;
+  }
+
+  .faq-item.active .faq-icon {
+    transform: rotate(45deg);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 2rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+  }
+
+  .faq-item.active .faq-answer {
+    max-height: 300px;
+    padding: 0 2rem 1.8rem 2rem;
+  }
+
+  /* ========================================
+     CTA SECTION
+     ======================================== */
+  .cta-section {
+    padding: 6rem 0;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(60px);
+    filter: blur(10px);
+    transition: opacity 1s ease-out, transform 1s ease-out, filter 1s ease-out;
+  }
+
+  .cta-section.in-view {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  .cta-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,255,0.2), transparent);
+    filter: blur(100px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: ctaGlowPulse 8s ease-in-out infinite;
+  }
+
+  @keyframes ctaGlowPulse {
+    0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.2); }
+  }
+
+  .cta-content {
+    position: relative;
+    z-index: 10;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cta-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #ffffff, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.4));
+  }
+
+  .cta-description {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 3rem;
+    line-height: 1.6;
+  }
+
+  .btn-cta {
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    padding: 1.2rem 4rem;
+    border-radius: 50px;
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-cta::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.7s ease, height 0.7s ease;
+  }
+
+  .btn-cta:hover::before {
+    width: 350px;
+    height: 350px;
+  }
+
+  .btn-cta:hover {
+    box-shadow: 0 0 70px rgba(0, 255, 255, 1);
+    transform: translateY(-5px) scale(1.05);
+    color: #000;
+  }
+
+  /* ========================================
+     MOBILE RESPONSIVENESS
+     ======================================== */
+  @media (max-width: 992px) {
+    .pricing-card.popular {
+      transform: scale(1);
+      margin-bottom: 2rem;
+    }
+
+    .comparison-row {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .comparison-row.header {
+      display: none;
+    }
+
+    .comparison-feature::before {
+      content: attr(data-label);
+      font-weight: 700;
+      color: #00ffff;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pricing-hero-title {
+      font-size: 2.5rem;
+    }
+
+    .pricing-hero-subtitle {
+      font-size: 1.1rem;
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+    }
+
+    .cta-title {
+      font-size: 2.2rem;
+    }
+
+    .pricing-card {
+      margin-bottom: 2rem;
+    }
+
+    .price-amount {
+      font-size: 2.8rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .pricing-hero-title {
+      font-size: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+    }
+
+    .cta-title {
+      font-size: 1.8rem;
+    }
+
+    .btn-cta {
+      padding: 1rem 2.5rem;
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<!-- PRICING HERO SECTION -->
+<section class="pricing-hero">
+  <div class="pricing-hero-glow glow-1"></div>
+  <div class="pricing-hero-glow glow-2"></div>
+
+  <div class="pricing-hero-content">
+    <div class="pricing-hero-badge">💎 Flexible Plans for Every Learner</div>
+    
+    <h1 class="pricing-hero-title">
+      Simple, Transparent Pricing
+    </h1>
+    
+    <p class="pricing-hero-subtitle">
+      Choose the plan that fits your learning journey.<br>
+      Upgrade or downgrade anytime — no hidden fees.
+    </p>
+  </div>
+</section>
+
+<!-- PRICING CARDS SECTION -->
+<section class="pricing-cards-section">
+  <div class="container">
+    <div class="row justify-content-center">
+
+      <!-- FREE PLAN -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="pricing-card">
+          <h3 class="plan-name">Free</h3>
+          
+          <div class="plan-price">
+            <span class="price-amount">
+              <span class="price-currency">₹</span>0
+            </span>
+            <span class="price-period">per month</span>
+          </div>
+
+          <ul class="plan-features">
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Limited MCQs (10/day)</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Basic AI summaries</span>
+            </li>
+            <li>
+              <span class="feature-icon disabled">✗</span>
+              <span>PDF export</span>
+            </li>
+            <li>
+              <span class="feature-icon disabled">✗</span>
+              <span>Quiz mode</span>
+            </li>
+            <li>
+              <span class="feature-icon disabled">✗</span>
+              <span>Priority AI responses</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Community access</span>
+            </li>
+          </ul>
+
+          <a href="/register" class="btn-pricing btn-pricing-outline">
+            Get Started Free
+          </a>
+        </div>
+      </div>
+
+      <!-- PRO PLAN (MOST POPULAR) -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="pricing-card popular">
+          <div class="popular-badge">✨ Most Popular</div>
+          
+          <h3 class="plan-name">Pro</h3>
+          
+          <div class="plan-price">
+            <span class="price-amount">
+              <span class="price-currency">₹</span>199
+            </span>
+            <span class="price-period">per month</span>
+          </div>
+
+          <ul class="plan-features">
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Unlimited MCQs</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>AI summaries + tutorials</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>PDF downloads</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Quiz mode with scoring</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Priority AI responses</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Advanced analytics</span>
+            </li>
+          </ul>
+
+          <a href="/register" class="btn-pricing btn-pricing-primary">
+            Upgrade to Pro
+          </a>
+        </div>
+      </div>
+
+      <!-- ENTERPRISE / STUDENT+ PLAN -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="pricing-card">
+          <h3 class="plan-name">Student+</h3>
+          
+          <div class="plan-price">
+            <span class="price-amount">
+              <span class="price-currency">₹</span>499
+            </span>
+            <span class="price-period">per month</span>
+          </div>
+
+          <ul class="plan-features">
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Everything in Pro</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Advanced analytics dashboard</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Custom difficulty tuning</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Bulk content generation</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Premium feature access</span>
+            </li>
+            <li>
+              <span class="feature-icon">✓</span>
+              <span>Priority support</span>
+            </li>
+          </ul>
+
+          <a href="/contact" class="btn-pricing btn-pricing-outline">
+            Contact Us
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE COMPARISON SECTION -->
+<section class="comparison-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Compare Plans</h2>
+      <p class="section-description">
+        See what's included in each plan and find the perfect fit for your needs.
+      </p>
+    </div>
+
+    <div class="comparison-table">
+      <div class="comparison-row header">
+        <div class="comparison-feature">Feature</div>
+        <div class="comparison-feature">Free</div>
+        <div class="comparison-feature">Pro</div>
+        <div class="comparison-feature">Student+</div>
+      </div>
+
+      <div class="comparison-row">
+        <div class="comparison-feature" data-label="Feature">MCQ Generation</div>
+        <div class="comparison-check" data-label="Free">10/day</div>
+        <div class="comparison-check" data-label="Pro">Unlimited</div>
+        <div class="comparison-check" data-label="Student+">Unlimited</div>
+    </div>
+    <div class="comparison-row">
+    <div class="comparison-feature" data-label="Feature">AI Summaries</div>
+    <div class="comparison-check" data-label="Free">✓</div>
+    <div class="comparison-check" data-label="Pro">✓</div>
+    <div class="comparison-check" data-label="Student+">✓</div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-feature" data-label="Feature">AI Tutorials</div>
+    <div class="comparison-check disabled" data-label="Free">✗</div>
+    <div class="comparison-check" data-label="Pro">✓</div>
+    <div class="comparison-check" data-label="Student+">✓</div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-feature" data-label="Feature">PDF Downloads</div>
+    <div class="comparison-check disabled" data-label="Free">✗</div>
+    <div class="comparison-check" data-label="Pro">✓</div>
+    <div class="comparison-check" data-label="Student+">✓</div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-feature" data-label="Feature">Quiz Mode</div>
+    <div class="comparison-check disabled" data-label="Free">✗</div>
+    <div class="comparison-check" data-label="Pro">✓</div>
+    <div class="comparison-check" data-label="Student+">✓</div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-feature" data-label="Feature">Priority AI Responses</div>
+    <div class="comparison-check disabled" data-label="Free">✗</div>
+    <div class="comparison-check" data-label="Pro">✓</div>
+    <div class="comparison-check" data-label="Student+">✓</div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-feature" data-label="Feature">Advanced Analytics</div>
+    <div class="comparison-check disabled" data-label="Free">✗</div>
+    <div class="comparison-check" data-label="Pro">Basic</div>
+    <div class="comparison-check" data-label="Student+">Full</div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-feature" data-label="Feature">Custom Difficulty</div>
+    <div class="comparison-check disabled" data-label="Free">✗</div>
+    <div class="comparison-check disabled" data-label="Pro">✗</div>
+    <div class="comparison-check" data-label="Student+">✓</div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-feature" data-label="Feature">Bulk Generation</div>
+    <div class="comparison-check disabled" data-label="Free">✗</div>
+    <div class="comparison-check disabled" data-label="Pro">✗</div>
+    <div class="comparison-check" data-label="Student+">✓</div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-feature" data-label="Feature">Priority Support</div>
+    <div class="comparison-check disabled" data-label="Free">✗</div>
+    <div class="comparison-check disabled" data-label="Pro">✗</div>
+    <div class="comparison-check" data-label="Student+">✓</div>
+  </div>
+</div>
+
+</div>
+</section>
+<!-- FAQ SECTION -->
+<section class="faq-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-description">
+        Everything you need to know about our pricing and plans.
+      </p>
+    </div>
+
+<div class="faq-container">
+  <div class="faq-item">
+    <div class="faq-question">
+      <span>Can I upgrade or downgrade my plan anytime?</span>
+      <span class="faq-icon">+</span>
+    </div>
+    <div class="faq-answer">
+      Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated accordingly. There are no penalties or long-term commitments.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span>What payment methods do you accept?</span>
+      <span class="faq-icon">+</span>
+    </div>
+    <div class="faq-answer">
+      We accept all major credit and debit cards, UPI, net banking, and digital wallets. All transactions are secured with industry-standard encryption.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span>Is there a refund policy?</span>
+      <span class="faq-icon">+</span>
+    </div>
+    <div class="faq-answer">
+      Yes, we offer a 7-day money-back guarantee for all paid plans. If you're not satisfied with your subscription, simply contact our support team within 7 days of purchase for a full refund.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span>What happens to my data if I cancel?</span>
+      <span class="faq-icon">+</span>
+    </div>
+    <div class="faq-answer">
+      Your account and all generated content remain accessible even after cancellation. You'll be downgraded to the Free plan, but your data is never deleted unless you explicitly request account deletion.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span>Do you offer student or educational discounts?</span>
+      <span class="faq-icon">+</span>
+    </div>
+    <div class="faq-answer">
+      Yes! We offer special discounts for students and educational institutions. Please contact us with your institutional email for more information about our academic pricing.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-question">
+      <span>Can I try Pro features before purchasing?</span>
+      <span class="faq-icon">+</span>
+    </div>
+    <div class="faq-answer">
+      Absolutely! You can start with our Free plan to explore the platform. We also offer a 7-day trial for the Pro plan with no credit card required.
+    </div>
+  </div>
+</div>
+
+</div> </section> <!-- CTA SECTION --> <section class="cta-section"> <div class="cta-glow"></div> <div class="cta-content"> <h2 class="cta-title">Ready to Transform Your Learning?</h2> <p class="cta-description"> Join thousands of students who are acing their exams with AI-powered preparation. Start your journey today. </p> <a href="/register" class="btn-cta">Start Learning Now</a> </div> </section> <script> // INTERSECTION OBSERVER FOR SCROLL ANIMATIONS const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -100px 0px' }; const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in-view'); } }); }, observerOptions); // OBSERVE SECTIONS document.querySelectorAll('.pricing-cards-section, .comparison-section, .faq-section, .cta-section').forEach(section => { observer.observe(section); }); // OBSERVE PRICING CARDS INDIVIDUALLY document.querySelectorAll('.pricing-card').forEach(card => { observer.observe(card); }); // FAQ ACCORDION FUNCTIONALITY document.querySelectorAll('.faq-question').forEach(question => { question.addEventListener('click', () => { const faqItem = question.parentElement; const isActive = faqItem.classList.contains('active'); // CLOSE ALL OTHER FAQ ITEMS document.querySelectorAll('.faq-item').forEach(item => { item.classList.remove('active'); }); // TOGGLE CURRENT ITEM if (!isActive) { faqItem.classList.add('active'); } }); }); </script>
+{% endblock body %}
+

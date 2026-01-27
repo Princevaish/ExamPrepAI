@@ -1,0 +1,472 @@
+{% extends "base.html" %}
+{% block title %}Services{% endblock title %}
+
+{% block body %}
+
+<style>
+  .services-hero {
+    height: 75vh;
+    background: linear-gradient(135deg, rgba(15, 32, 39, 0.65), rgba(32, 58, 67, 0.65)), 
+                url("https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1600&q=80") center/cover fixed;
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .services-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(0, 255, 255, 0.2), transparent 60%),
+                radial-gradient(circle at 70% 50%, rgba(0, 179, 255, 0.2), transparent 60%);
+    animation: heroGlow 8s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes heroGlow {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    animation: fadeIn 1.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #ffffff, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.37),
+      0 0 60px rgba(0, 255, 255, 0.2),
+      inset 0 0 40px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s ease;
+    animation: slideUp 0.8s ease-out;
+    animation-fill-mode: both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .glass-card:nth-child(1) { animation-delay: 0.1s; }
+  .glass-card:nth-child(2) { animation-delay: 0.2s; }
+  .glass-card:nth-child(3) { animation-delay: 0.3s; }
+  .glass-card:nth-child(4) { animation-delay: 0.4s; }
+
+  .glass-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 80px rgba(0, 255, 255, 0.5);
+    border-color: rgba(0, 255, 255, 0.5);
+  }
+
+  .service-icon-wrapper {
+    width: 90px;
+    height: 90px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 179, 255, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover .service-icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 
+      0 6px 25px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(0, 255, 255, 0.6);
+  }
+
+  .service-icon-wrapper img {
+    width: 55px;
+    height: 55px;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+  }
+
+  .feature-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 2rem;
+    transition: all 0.4s ease;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.03);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 
+      0 8px 30px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(0, 200, 255, 0.5);
+    border-color: rgba(0, 200, 255, 0.4);
+  }
+
+  .testimonial-card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 2.5rem 2rem;
+    transition: all 0.4s ease;
+  }
+
+  .testimonial-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.4),
+      0 0 40px rgba(0, 255, 255, 0.4);
+  }
+
+  .accordion-item {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .accordion-button {
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 1.2rem 1.5rem;
+    font-weight: 600;
+    box-shadow: none;
+  }
+
+  .accordion-button:not(.collapsed) {
+    background: rgba(0, 200, 255, 0.1);
+    color: #00ffff;
+    box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1);
+  }
+
+  .accordion-button:focus {
+    box-shadow: none;
+    border: none;
+  }
+
+  .accordion-button::after {
+    filter: brightness(0) invert(1);
+  }
+
+  .accordion-body {
+    background: rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 1.2rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.2), rgba(0, 179, 255, 0.2));
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 4rem 2rem;
+    text-align: center;
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 0 60px rgba(0, 255, 255, 0.3);
+  }
+
+  .btn-neon {
+    background: linear-gradient(135deg, #00ffff, #00b3ff);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-neon:hover {
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.9);
+    transform: translateY(-3px) scale(1.05);
+    color: #000;
+  }
+
+  h2, h3, h4, h5, h6 {
+    color: #fff;
+  }
+
+  .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  .text-light {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  @media (max-width: 768px) {
+    .services-hero {
+      height: 65vh;
+      background-attachment: scroll;
+    }
+
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .glass-card {
+      margin-bottom: 1rem;
+    }
+  }
+</style>
+
+<!-- ========== HERO SECTION ========== -->
+<section class="services-hero text-white">
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="section-title mb-3">Our Services</h1>
+      <p class="section-subtitle mb-4">
+        Explore powerful AI tools that make your exam preparation smarter & faster.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SERVICES GRID ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">What We Provide</h2>
+      <p class="section-subtitle">Professional AI tools designed to enhance your learning experience</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-card text-center p-4 h-100">
+          <div class="service-icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/709/709722.png" alt="MCQ">
+          </div>
+          <h5 class="fw-bold mb-3">MCQ Generator</h5>
+          <p class="small text-light">Create exam-quality MCQs instantly using AI.</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-card text-center p-4 h-100">
+          <div class="service-icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Summarizer">
+          </div>
+          <h5 class="fw-bold mb-3">AI Summarizer</h5>
+          <p class="small text-light">Generate crystal-clear summaries from long texts.</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-card text-center p-4 h-100">
+          <div class="service-icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/552/552486.png" alt="Tutorials">
+          </div>
+          <h5 class="fw-bold mb-3">Smart Tutorials</h5>
+          <p class="small text-light">AI-crafted tutorials with theory + examples.</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-card text-center p-4 h-100">
+          <div class="service-icon-wrapper">
+            <img src="https://cdn-icons-png.flaticon.com/512/906/906175.png" alt="Quiz">
+          </div>
+          <h5 class="fw-bold mb-3">AI Quiz Mode</h5>
+          <p class="small text-light">Adaptive quizzes with instant evaluation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== ADVANCED FEATURES ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Advanced Features</h2>
+      <p class="section-subtitle">Unlock more possibilities with our premium AI tools</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="feature-card">
+          <h5 class="fw-bold mb-3">✔ Topic Expansion</h5>
+          <p class="text-light mb-0">Automatically generate subtopics for deeper learning.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="feature-card">
+          <h5 class="fw-bold mb-3">✔ Flashcard Creator</h5>
+          <p class="text-light mb-0">Convert summaries into smart Q&A flashcards.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="feature-card">
+          <h5 class="fw-bold mb-3">✔ PDF Exports</h5>
+          <p class="text-light mb-0">Download MCQs, summaries, and tutorials in stylish PDFs.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="feature-card">
+          <h5 class="fw-bold mb-3">✔ Exam Mode</h5>
+          <p class="text-light mb-0">Simulate real exam conditions with timed tests.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FAQ SECTION ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-subtitle">Common queries about our services</p>
+    </div>
+
+    <div class="accordion" id="faqAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">
+            How does MCQ Generator work?
+          </button>
+        </h2>
+        <div id="faq1" class="accordion-collapse collapse show">
+          <div class="accordion-body">
+            It uses advanced AI models to generate accurate exam-ready questions.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">
+            Can I download the output?
+          </button>
+        </h2>
+        <div id="faq2" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            Yes, you can export MCQs, summaries, and tutorials as PDFs.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">
+            Is the platform free?
+          </button>
+        </h2>
+        <div id="faq3" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            Most tools are free; premium features may require subscription.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TESTIMONIALS ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">What Students Say</h2>
+      <p class="section-subtitle">Trusted by learners everywhere</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="testimonial-card text-center">
+          <p class="text-light mb-3">"The MCQ generator saved me HOURS of study time."</p>
+          <h6 class="fw-bold mb-0">— Rahul Kumar</h6>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="testimonial-card text-center">
+          <p class="text-light mb-3">"The summarizer is unbelievably accurate and clean."</p>
+          <h6 class="fw-bold mb-0">— Simran Kaur</h6>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="testimonial-card text-center">
+          <p class="text-light mb-3">"Best AI study tool I've ever used."</p>
+          <h6 class="fw-bold mb-0">— Arjun Singh</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA SECTION ========== -->
+<section class="py-5">
+  <div class="container">
+    <div class="cta-section">
+      <h2 class="fw-bold mb-3">Level Up Your Exam Prep Today</h2>
+      <p class="mb-4" style="color: rgba(255, 255, 255, 0.8);">Use AI to generate quizzes, summaries, and tutorials instantly.</p>
+      <a href="/" class="btn-neon">Back to Home</a>
+    </div>
+  </div>
+</section>
+
+{% endblock body %}
