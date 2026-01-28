@@ -27,7 +27,10 @@ C. <Option C>
 D. <Option D>
 Answer: <Correct Option Letter>
 Explanation: <Short, clear explanation of why this answer is correct>
-Area of Improvement: <Specific topic/concept to study if this question was answered incorrectly>
+Area of Improvement:
+- Concept: <exact technical concept name>
+- What to practice: <specific action or subtopic>
+
 
 MANDATORY REQUIREMENTS FOR "Area of Improvement":
 - MUST be specific to the question's topic
@@ -53,6 +56,15 @@ Guidelines:
 - The quiz difficulty MUST strictly match the selected level
 
 REMEMBER: The "Area of Improvement" field is MANDATORY and must be SPECIFIC, not generic!
+
+ABSOLUTE RULE:
+The "Area of Improvement" MUST be written in TWO bullet points:
+1. Concept:
+2. What to practice:
+
+If you output a generic phrase like "review the topic", "study more", or similar,
+the response will be considered INVALID.
+
 """
 )
 
@@ -118,17 +130,37 @@ def parse_quiz_response(response: str) -> List[Dict]:
                 # Clean up any newlines
                 improvement = " ".join(improvement.split())
                 
-                # Check if improvement is too generic
-                generic_phrases = [
+                # FIXED: Only reject if the improvement is TOO GENERIC or TOO SHORT
+                # Check if improvement is EXACTLY a generic phrase (not just containing the words)
+                exact_generic_phrases = [
                     "review the topic",
+                    "review the topic thoroughly",
                     "study more",
                     "practice more",
                     "read more",
-                    "learn more"
+                    "learn more",
+                    "review this topic",
+                    "study this topic",
+                    "practice this"
                 ]
-                if any(phrase in improvement.lower() for phrase in generic_phrases):
-                    print(f"[WARNING] Generic improvement detected: '{improvement}'")
+                
+                improvement_lower = improvement.lower().strip()
+                
+                # Reject if:
+                # 1. It's exactly a generic phrase, OR
+                # 2. It's too short (less than 15 characters), OR
+                # 3. It's just "review" or "study" or "practice" alone
+                is_too_generic = (
+                    improvement_lower in exact_generic_phrases or
+                    len(improvement) < 15 or
+                    improvement_lower in ["review", "study", "practice", "learn", "read"]
+                )
+                
+                if is_too_generic:
+                    print(f"[WARNING] Generic/short improvement detected: '{improvement}'")
                     improvement = ""  # Reset to trigger fallback
+                else:
+                    print(f"[VALID] Accepted improvement: '{improvement}'")
 
             # Debug print
             print(f"[PARSE] Question: {question[:60]}...")
@@ -140,19 +172,26 @@ def parse_quiz_response(response: str) -> List[Dict]:
             # Generate fallback improvement based on question content if not found
             if not improvement:
                 # Try to extract topic from question
-                if "python" in question.lower():
+                question_lower = question.lower()
+                topic_lower = "{topic}".lower() if "{topic}" else ""
+                
+                if "python" in question_lower or "python" in topic_lower:
                     improvement = "Review Python fundamentals and syntax"
-                elif "sql" in question.lower() or "database" in question.lower():
+                elif "sql" in question_lower or "database" in question_lower:
                     improvement = "Study database concepts and SQL queries"
-                elif "javascript" in question.lower() or "js" in question.lower():
+                elif "javascript" in question_lower or "js" in question_lower:
                     improvement = "Review JavaScript core concepts"
-                elif "algorithm" in question.lower():
+                elif "algorithm" in question_lower:
                     improvement = "Practice algorithm design and analysis"
-                elif "data structure" in question.lower():
+                elif "data structure" in question_lower:
                     improvement = "Study data structures implementation"
+                elif "network" in question_lower or "osi" in question_lower:
+                    improvement = "Review networking fundamentals"
+                elif "java" in question_lower:
+                    improvement = "Study Java programming concepts"
                 else:
-                    # Use topic from question or generic
-                    improvement = f"Review concepts related to this question"
+                    # Last resort fallback
+                    improvement = "Study the fundamental concepts related to this question"
                 
                 print(f"[FALLBACK] Generated improvement: '{improvement}'")
 
