@@ -772,7 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isCorrect) {
         const improvementText = q.improvement || 'Review the topic thoroughly.';
         console.log('Adding improvement text:', improvementText);
-        feedbackHTML += `<p class="mb-0"><strong>Area of Improvement:</strong> ${improvementText}</p>`;
+        feedbackHTML += `<p class="mb-0"><strong>Tip:</strong> ${improvementText}</p>`;
       }
       
       feedbackBox.className = `alert ${isCorrect ? 'alert-success' : 'alert-danger'}`;
